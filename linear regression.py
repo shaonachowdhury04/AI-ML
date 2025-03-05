@@ -1,43 +1,35 @@
 import numpy as np
-import pandas as pd
-from sklearn.datasets import load_boston
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.pyplot as plt
 
-# Load the dataset
-boston = load_boston()
+# Given data: Study hours (x) and Exam scores (y)
+x = np.array([1, 2, 3, 4, 5])
+y = np.array([2, 3, 5, 6, 8])
 
-# Create a DataFrame
-data = pd.DataFrame(boston.data, columns=boston.feature_names)
-data['MEDV'] = boston.target  # Adding the target column
+# Step 1: Compute means of x and y
+x_mean = np.mean(x)
+y_mean = np.mean(y)
 
-# Features and target variable
-X = data.drop('MEDV', axis=1)  # Independent variables
-y = data['MEDV']  # Dependent variable
+# Step 2: Compute slope (m)
+numerator = np.sum((x - x_mean) * (y - y_mean))  # Σ(xi - x̄)(yi - ȳ)
+denominator = np.sum((x - x_mean) ** 2)          # Σ(xi - x̄)^2
+m = numerator / denominator
 
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Step 3: Compute intercept (b)
+b = y_mean - m * x_mean
 
-# Initialize the Linear Regression model
-model = LinearRegression()
+# Step 4: Create regression line
+y_pred = m * x + b  # Predicted y values
 
-# Train the model
-model.fit(X_train, y_train)
+# Step 5: Plot data points and regression line
+plt.scatter(x, y, color='blue', label='Actual Data')  # Scatter plot of original data
+plt.plot(x, y_pred, color='red', label='Regression Line')  # Regression line
+plt.xlabel("Study Hours")
+plt.ylabel("Exam Score")
+plt.title("Linear Regression: Study Hours vs Exam Score")
+plt.legend()
+plt.show()
 
-# Make predictions
-y_pred = model.predict(X_test)
-
-# Model evaluation
-mse = mean_squared_error(y_test, y_pred)
-r2 = r2_score(y_test, y_pred)
-
-# Display results
-print("Mean Squared Error (MSE):", mse)
-print("R-squared (R2 Score):", r2)
-
-# Coefficients and Intercept
-print("\nCoefficients:")
-for feature, coef in zip(boston.feature_names, model.coef_):
-    print(f"{feature}: {coef:.4f}")
-print("\nIntercept:", model.intercept_)
+# Step 6: Predict for a new value (e.g., 6 hours)
+x_new = 6
+y_new = m * x_new + b
+print(f"Predicted score for {x_new} study hours: {y_new:.2f}")
